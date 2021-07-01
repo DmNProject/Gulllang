@@ -1,5 +1,9 @@
 grammar gulllang;
 
+@header {
+ package ru.dmn.gulllang;
+}
+
 /*
 */
 
