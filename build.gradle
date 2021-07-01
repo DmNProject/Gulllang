@@ -1,0 +1,52 @@
+plugins {
+    id 'java-library'
+    id 'scala'
+    id 'antlr'
+}
+
+group 'ru.DmN.gulllang'
+version '1.0'
+
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.additionalParameters = ["-feature", "-language:postfixOps", "-language:implicitConversions", "-language:higherKinds", "-language:existentials"]
+}
+
+configurations {
+    compile {
+        extendsFrom = extendsFrom.findAll { it != configurations.antlr }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    antlr "org.antlr:antlr4:4.9.2"
+    compile "org.antlr:antlr4-runtime:4.9.2"
+    implementation 'org.scala-lang:scala-library:2.11.12'
+    testImplementation group: 'junit', name: 'junit', version: '4.13.2'
+    testImplementation group: 'org.scalatest', name: 'scalatest-all_2.11', version: '3.0.0-M11'
+    testImplementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+}
+
+generateGrammarSource {
+    maxHeapSize = "64m"
+
+    // Keep a copy of generated sources
+    doLast {
+        println "Copying generated grammar lexer/parser files to main directory."
+        copy {
+            from "${buildDir}/generated-src/antlr/main"
+            into "generated-src/main/java"
+        }
+    }
+}
+
+clean.doLast {
+    file('generated-src').deleteDir()
+}
+
+test {
+    useJUnitPlatform()
+}
